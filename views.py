@@ -273,6 +273,7 @@ def edit_food(id):
 
 @main_blueprint.route('/delete_food/<int:id>', methods=['POST'])
 def delete_food(id):
+    
     entry = FoodEntry.query.get(id)
     if entry:
         db.session.delete(entry)
