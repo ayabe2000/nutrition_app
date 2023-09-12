@@ -1,4 +1,10 @@
 import_food.log
 nutrition_app4_backup/
-config.py
-
+venv/
+__pycache__/
+*.jpg
+*.png
+*.o
+*.exe
+*.swp
+*.bak
