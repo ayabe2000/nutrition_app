@@ -1,0 +1,22 @@
+# 以下のファイルやディレクトリを Git の追跡から除外します
+# これらは .gitignore に追加されていないため追跡されます
+
+# 特定のファイルやディレクトリを除外せず、すべてを追跡します
+# これは最初に "!"（否定）を使い、それから特定のファイルやディレクトリを除外します
+*
+
+# 特定のファイルやディレクトリを追跡対象にします
+# これは "!" を使って除外ルールを上書きします
+!app.py
+!templates/
+!extensions.py
+!models.py
+!forms.py
+!config.py
+!import_data.py
+!views.py
+!create_db.py
+!init_db.py
+!generate_graph.py
+!check_schema.py
+!utils.py
