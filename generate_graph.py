@@ -4,7 +4,7 @@ from flask import current_app as app
 
 import matplotlib.pyplot as plt
 import base64
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from models import Food
 
@@ -79,7 +79,9 @@ foods = [
 def fetch_data():
     """データベースから日付ごとの栄養素摂取量を取得"""
     engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")
-    print(engine)
+
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=9)
 
     connection = engine.connect()
     result = connection.execute(
