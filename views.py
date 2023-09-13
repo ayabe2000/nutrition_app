@@ -15,8 +15,6 @@ from utils import get_available_foods
 from models import create_new_food_entry
 from generate_graph import generate_graph, fetch_data
 import logging
-import matplotlib.pyplot as plt
-import matplotlib
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -88,22 +86,17 @@ def dashboard():
         # 今日の栄養データの取得
         today = datetime.now().date()
         nutrients_data_today = get_nutrients_data_today(today)
-        print("nutrients_data_today:", nutrients_data_today)
 
         # デイリーナットリエントの作成/更新
         user_id = current_user.id  # または適切なユーザーIDを取得
         update_daily_nutrient(user_id, nutrients_data_today, selected_date)
 
         dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
-        print("Dates:", dates)  # デバッグメッセージ：日付データを表示
-        print("Protein:", protein) 
 
         logging.info("Fetched new data and generating graph...")
 
         # グラフの更新
         generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
-        matplotlib.use('Agg')
-        plt.show()  # グラフを表示
 
     all_entries = FoodEntry.query.order_by(FoodEntry.date.desc()).all()
     nutrients_data = compute_nutrients(all_entries)
