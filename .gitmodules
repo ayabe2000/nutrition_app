@@ -1,0 +1,3 @@
+[submodule "nutrition_app"]
+    path = nutrition_app
+    url = https://github.com/ayabe2000/nutrition_app.git

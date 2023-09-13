@@ -86,6 +86,9 @@ def fetch_data():
     start_date = end_date - timedelta(days=9)
 
     connection = engine.connect()
+
+    print("Fetching data from the database...")
+
     result = connection.execute(
         text(
             """
@@ -113,6 +116,13 @@ def fetch_data():
     carbohydrates = []
 
     for row in result:
+        print("Date:", row[0])
+        print("protein:", row[1])
+        print("energy:", row[2])
+        print("fat:", row[3])
+        print("cholesterol:", row[4])
+        print("carbohydrates:", row[5])
+        
         date_str = row[0]
         if date_str:
             dates.append(datetime.strptime(date_str, "%Y-%m-%d"))
