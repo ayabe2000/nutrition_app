@@ -7,6 +7,6 @@ def get_available_foods():
         ("いも"),
         ("あずき"),
         ("オクラ"),
-        ("かぶ")
+        ("かぶ"),
     ]
     return available_foods

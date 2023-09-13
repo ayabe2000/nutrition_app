@@ -4,7 +4,7 @@ from flask import current_app as app
 
 import matplotlib.pyplot as plt
 import base64
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import numpy as np
 from models import Food
 import os
@@ -77,6 +77,7 @@ foods = [
     },
 ]
 
+
 def fetch_data():
     """データベースから日付ごとの栄養素摂取量を取得"""
     engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")
@@ -84,23 +85,25 @@ def fetch_data():
     end_date = datetime.now()
     start_date = end_date - timedelta(days=9)
 
-
     connection = engine.connect()
     result = connection.execute(
-        text("""
+        text(
+            """
         SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, 
             SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, 
             SUM(carbs_per_100g) as carbohydrates 
         FROM food 
         WHERE date BETWEEN :start_date AND :end_date 
         GROUP BY date
-    """), 
-        {"start_date": start_date.strftime('%Y-%m-%d'), "end_date": end_date.strftime('%Y-%m-%d')}
+    """
+        ),
+        {
+            "start_date": start_date.strftime("%Y-%m-%d"),
+            "end_date": end_date.strftime("%Y-%m-%d"),
+        },
     )
-    start_date=start_date.strftime('%Y-%m-%d'),
-    end_date=end_date.strftime('%Y-%m-%d')
-
-
+    start_date = (start_date.strftime("%Y-%m-%d"),)
+    end_date = end_date.strftime("%Y-%m-%d")
 
     dates = []
     protein = []
@@ -110,25 +113,21 @@ def fetch_data():
     carbohydrates = []
 
     for row in result:
-
         date_str = row[0]
         if date_str:
-            dates.append(datetime.strptime(date_str, '%Y-%m-%d'))     
+            dates.append(datetime.strptime(date_str, "%Y-%m-%d"))
         else:
             dates.append(None)
-
 
         protein.append(row[1])
         energy.append(row[2])
         fat.append(row[3])
-        cholesterol.append(row[4]) 
-        carbohydrates.append(row[5])  
+        cholesterol.append(row[4])
+        carbohydrates.append(row[5])
 
     connection.close()
 
-
     return dates, protein, energy, fat, cholesterol, carbohydrates
-
 
 
 def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
@@ -155,13 +154,8 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-
-    
     # グラフを保存
-    plt.savefig(os.path.join(app.root_path, 'static', 'graphs', 'nutrient_intake.png'))
-
-
-
+    plt.savefig(os.path.join(app.root_path, "static", "graphs", "nutrient_intake.png"))
 
 
 def get_base64_encoded_image(image_path):
