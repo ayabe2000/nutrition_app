@@ -5,7 +5,7 @@ from flask import current_app as app
 import matplotlib.pyplot as plt
 import base64
 from datetime import datetime,timedelta
-
+import numpy as np
 from models import Food
 
 
@@ -83,9 +83,21 @@ def fetch_data():
     end_date = datetime.now()
     start_date = end_date - timedelta(days=9)
 
+
     connection = engine.connect()
     result = connection.execute(
-        text("SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, SUM(carbs_per_100g) as carbohydrates FROM food WHERE created_at IS NOT NULL GROUP BY date")
+        text("""
+        SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, 
+               SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, 
+               SUM(carbs_per_100g) as carbohydrates 
+        FROM food 
+        WHERE date BETWEEN :start_date AND :end_date 
+        GROUP BY date
+    """), 
+    start_date=start_date.strftime('%Y-%m-%d'),
+    end_date=end_date.strftime('%Y-%m-%d')
+
+
     )
 
     dates = []
@@ -113,16 +125,20 @@ def fetch_data():
     connection.close()
 
 
-
-
     return dates, protein, energy, fat, cholesterol, carbohydrates
-
-
 
 
 
 def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     """fetch_data関数から取得したデータを用いて栄養素摂取量の時間経過による変化を示すグラフを作成"""
+
+    dates = np.array(dates)
+    protein = np.array(protein)
+    energy = np.array(energy)
+    fat = np.array(fat)
+    cholesterol = np.array(cholesterol)
+    carbohydrates = np.array(carbohydrates)
+
     plt.figure()
     plt.plot(dates, protein, label="Protein (g)")
     plt.plot(dates, energy, label="Energy (kcal)")

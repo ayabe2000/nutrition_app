@@ -6,6 +6,7 @@ from models import User, FoodEntry, Food, DailyNutrient, db,get_food_by_name, cr
 from utils import get_available_foods
 from models import create_new_food_entry
 from generate_graph import generate_graph,fetch_data
+import logging
 
 
 
@@ -80,7 +81,6 @@ def dashboard():
 
     if form.validate_on_submit() and current_user.is_authenticated:
         selected_date = form.date.data # フォームから選択された日付を取得
-        nutrients_data_today = handle_form_submission(form)
 
         #今日の栄養データの取得
         today = datetime.now().date()
@@ -92,6 +92,8 @@ def dashboard():
 
         dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
 
+        logging.info("Fetched new data and generating graph...")
+
         # グラフの更新 
         generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
         
@@ -101,7 +103,7 @@ def dashboard():
     entries = group_entries_by_date(all_entries)
 
     available_foods = get_available_foods()
-    form.name.choices = available_foods
+    
 
 
     return render_template(
