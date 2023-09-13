@@ -7,6 +7,7 @@ import base64
 from datetime import datetime,timedelta
 import numpy as np
 from models import Food
+import os
 
 
 foods = [
@@ -88,17 +89,18 @@ def fetch_data():
     result = connection.execute(
         text("""
         SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, 
-               SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, 
-               SUM(carbs_per_100g) as carbohydrates 
+            SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, 
+            SUM(carbs_per_100g) as carbohydrates 
         FROM food 
         WHERE date BETWEEN :start_date AND :end_date 
         GROUP BY date
     """), 
+        {"start_date": start_date.strftime('%Y-%m-%d'), "end_date": end_date.strftime('%Y-%m-%d')}
+    )
     start_date=start_date.strftime('%Y-%m-%d'),
     end_date=end_date.strftime('%Y-%m-%d')
 
 
-    )
 
     dates = []
     protein = []
@@ -153,9 +155,13 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig("static/nutrient_intake.png")
 
-    #plt.show()
+    
+    # グラフを保存
+    plt.savefig(os.path.join(app.root_path, 'static', 'graphs', 'nutrient_intake.png'))
+
+
+
 
 
 def get_base64_encoded_image(image_path):
