@@ -104,9 +104,6 @@ def dashboard():
     form.name.choices = available_foods
 
 
-
-   
-
     return render_template(
         'dashboard.html',
         form=form,
