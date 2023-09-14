@@ -37,6 +37,7 @@ from models import db, User
 
 @login_manager.user_loader
 def load_user(user_id):
+    """ユーザー認証を行う"""
     return User.query.get(int(user_id))
 
 

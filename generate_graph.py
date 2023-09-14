@@ -3,10 +3,10 @@ from sqlalchemy import create_engine, text
 from flask import current_app as app
 
 import matplotlib.pyplot as plt
-import base64
-from datetime import datetime
+import base6
 
 from models import Food
+import os
 
 
 foods = [
@@ -76,6 +76,7 @@ foods = [
     },
 ]
 
+
 def fetch_data():
     """データベースから日付ごとの栄養素摂取量を取得"""
 
@@ -85,12 +86,10 @@ def fetch_data():
 
 
     connection = engine.connect()
-    result = connection.execute(
 
-#       text("SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, SUM(carbs_per_100g) as carbohydrates FROM food WHERE date IS NOT NULL GROUP BY date")
-        text("SELECT date, SUM(protein) as protein, SUM(energy_kcal) as energy, SUM(fat) as fat, SUM(cholesterol) as cholesterol, SUM(carbohydrates) as carbohydrates FROM food_entry WHERE date IS NOT NULL GROUP BY date")
+    print("Fetching data from the database...")
 
-    )
+    result = connection
 
     dates = []
     protein = []
@@ -100,36 +99,39 @@ def fetch_data():
     carbohydrates = []
 
     for row in result:
-
+        print("Date:", row[0])
+        print("protein:", row[1])
+        print("energy:", row[2])
+        print("fat:", row[3])
+        print("cholesterol:", row[4])
+        print("carbohydrates:", row[5])
+        
         date_str = row[0]
-        if date_str:
-
-#           dates.append(datetime.strptime(date_str, '%Y-%m-%d'))
-            dates.append(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f'))     
-
+        if da
         else:
             dates.append(None)
-
 
         protein.append(row[1])
         energy.append(row[2])
         fat.append(row[3])
-        cholesterol.append(row[4]) 
-        carbohydrates.append(row[5])  
+        cholesterol.append(row[4])
+        carbohydrates.append(row[5])
 
     connection.close()
-
-
-
 
     return dates, protein, energy, fat, cholesterol, carbohydrates
 
 
-
-
-
 def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     """fetch_data関数から取得したデータを用いて栄養素摂取量の時間経過による変化を示すグラフを作成"""
+
+    dates = np.array(dates)
+    protein = np.array(protein)
+    energy = np.array(energy)
+    fat = np.array(fat)
+    cholesterol = np.array(cholesterol)
+    carbohydrates = np.array(carbohydrates)
+
     plt.figure()
     plt.plot(dates, protein, label="Protein (g)")
     plt.plot(dates, energy, label="Energy (kcal)")
@@ -144,10 +146,6 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig("nutrient_intake.png")
-
-
-    # plt.show()
 
 
 

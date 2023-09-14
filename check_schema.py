@@ -1,7 +1,7 @@
 import sqlite3
 
 # Step 1: データベースへの接続を開く
-conn = sqlite3.connect('/root/nutrition_app4/database.db')
+conn = sqlite3.connect("/root/nutrition_app4/database.db")
 
 # Step 2: カーソルオブジェクトを作成
 cursor = conn.cursor()

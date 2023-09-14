@@ -16,7 +16,6 @@ from utils import get_available_foods
 from models import create_new_food_entry
 
 
-
 main_blueprint = Blueprint("main", __name__)
 
 
@@ -75,20 +74,20 @@ def dashboard():
     form = FoodEntryForm()
     available_foods = get_available_foods()
     nutrients_data_today = None
-
+    selected_date = form.date.data
 
     form.name.choices = [(food, food) for food in available_foods]
 
     if form.validate_on_submit() and current_user.is_authenticated:
-
-
+        selected_date = form.date.data
+        nutrients_data_today = handle_form_submission(form)
 
     all_entries = FoodEntry.query.order_by(FoodEntry.date.desc()).all()
     nutrients_data = compute_nutrients(all_entries)
     entries = group_entries_by_date(all_entries)
 
     available_foods = get_available_foods()
-
+    form.name.choices = available_foods
 
     return render_template(
         "dashboard.html",
@@ -97,6 +96,7 @@ def dashboard():
         nutrients_data=nutrients_data,
         entries=entries,
         available_foods=available_foods,
+        selected_date=selected_date,
     )
 
 
@@ -153,8 +153,6 @@ def update_daily_nutrient(user_id, nutrients_data_today, selected_date):
     daily_nutrient.total_fat = nutrients_data_today["Fat"]
 
     db.session.commit()
-
-
 
 
 def compute_nutrients(entries, debug_mode=False):
@@ -280,6 +278,7 @@ def edit_food(id):
 
 @main_blueprint.route("/delete_food/<int:id>", methods=["POST"])
 def delete_food(id):
+    """食品エントリの削除"""
     entry = FoodEntry.query.get(id)
     if entry:
         db.session.delete(entry)
