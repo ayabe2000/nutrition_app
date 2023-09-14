@@ -6,10 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from extensions import db
 
 
-
 db = SQLAlchemy()
-
-
 
 
 class User(db.Model, UserMixin):

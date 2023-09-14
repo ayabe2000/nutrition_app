@@ -4,7 +4,7 @@ from flask import current_app as app
 
 import matplotlib.pyplot as plt
 import base64
-from datetime import datetime,timedelta
+from datetime import datetime
 
 from models import Food
 
@@ -78,14 +78,18 @@ foods = [
 
 def fetch_data():
     """データベースから日付ごとの栄養素摂取量を取得"""
-    engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")
 
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=9)
+    """engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")"""
+    engine = create_engine("sqlite:///instance/nutrition_app.db")
+    print(engine)
+
 
     connection = engine.connect()
     result = connection.execute(
-        text("SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, SUM(carbs_per_100g) as carbohydrates FROM food WHERE created_at IS NOT NULL GROUP BY date")
+
+#       text("SELECT date, SUM(protein_per_100g) as protein, SUM(energy_kcal_100g) as energy, SUM(fat_per_100g) as fat, SUM(cholesterol_per_100g) as cholesterol, SUM(carbs_per_100g) as carbohydrates FROM food WHERE date IS NOT NULL GROUP BY date")
+        text("SELECT date, SUM(protein) as protein, SUM(energy_kcal) as energy, SUM(fat) as fat, SUM(cholesterol) as cholesterol, SUM(carbohydrates) as carbohydrates FROM food_entry WHERE date IS NOT NULL GROUP BY date")
+
     )
 
     dates = []
@@ -99,7 +103,10 @@ def fetch_data():
 
         date_str = row[0]
         if date_str:
-            dates.append(datetime.strptime(date_str, '%Y-%m-%d'))     
+
+#           dates.append(datetime.strptime(date_str, '%Y-%m-%d'))
+            dates.append(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f'))     
+
         else:
             dates.append(None)
 
@@ -137,9 +144,11 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig("static/nutrient_intake.png")
+    plt.savefig("nutrient_intake.png")
 
-    #plt.show()
+
+    # plt.show()
+
 
 
 def get_base64_encoded_image(image_path):
@@ -162,6 +171,16 @@ def create_html(encoded_image):
         html_file.write(html_str)
 
 
+def get_image_data():
+    """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
+    dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
+    generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
+
+    encoded_image = get_base64_encoded_image("nutrient_intake.png")
+    return encoded_image
+
+
+
 # main関数
 def main():
     """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
@@ -172,5 +191,6 @@ def main():
     create_html(encoded_image)
 
 
+"""if __name__ == "generate_graph":"""
 if __name__ == "__main__":
     main()
