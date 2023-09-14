@@ -3,10 +3,10 @@ from sqlalchemy import create_engine, text
 from flask import current_app as app
 
 import matplotlib.pyplot as plt
-import base6
+import base64
+from datetime import datetime
 
 from models import Food
-import os
 
 
 foods = [
@@ -76,20 +76,16 @@ foods = [
     },
 ]
 
-
 def fetch_data():
     """データベースから日付ごとの栄養素摂取量を取得"""
 
     """engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")"""
     engine = create_engine("sqlite:///instance/nutrition_app.db")
-    print(engine)
-
 
     connection = engine.connect()
-
-    print("Fetching data from the database...")
-
-    result = connection
+    result = connection.execute(
+        text("SELECT date, SUM(protein) as protein, SUM(energy_kcal) as energy, SUM(fat) as fat, SUM(cholesterol) as cholesterol, SUM(carbohydrates) as carbohydrates FROM food_entry WHERE date IS NOT NULL GROUP BY date")
+    )
 
     dates = []
     protein = []
@@ -99,23 +95,29 @@ def fetch_data():
     carbohydrates = []
 
     for row in result:
-        print("Date:", row[0])
-        print("protein:", row[1])
-        print("energy:", row[2])
-        print("fat:", row[3])
-        print("cholesterol:", row[4])
-        print("carbohydrates:", row[5])
-        
+
         date_str = row[0]
-        if da
+        if date_str:
+
+            dates.append(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f'))     
+
         else:
             dates.append(None)
+
 
         protein.append(row[1])
         energy.append(row[2])
         fat.append(row[3])
-        cholesterol.append(row[4])
-        carbohydrates.append(row[5])
+        cholesterol.append(row[4]) 
+        carbohydrates.append(row[5])  
+
+    print("Fetched Data:")
+    print("Dates:", dates)
+    print("Protein:", protein)
+    print("Energy:", energy)
+    print("Fat:", fat)
+    print("Cholesterol:", cholesterol)
+    print("Carbohydrates:", carbohydrates)
 
     connection.close()
 
@@ -124,14 +126,6 @@ def fetch_data():
 
 def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     """fetch_data関数から取得したデータを用いて栄養素摂取量の時間経過による変化を示すグラフを作成"""
-
-    dates = np.array(dates)
-    protein = np.array(protein)
-    energy = np.array(energy)
-    fat = np.array(fat)
-    cholesterol = np.array(cholesterol)
-    carbohydrates = np.array(carbohydrates)
-
     plt.figure()
     plt.plot(dates, protein, label="Protein (g)")
     plt.plot(dates, energy, label="Energy (kcal)")
@@ -146,6 +140,16 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
+    plt.savefig("nutrient_intake.png")
+
+    print("Graph Data Points:")
+    print("Dates:", dates)
+    print("Protein:", protein)
+    print("Energy:", energy)
+    print("Fat:", fat)
+    print("Cholesterol:", cholesterol)
+    print("Carbohydrates:", carbohydrates)
+
 
 
 
@@ -154,19 +158,6 @@ def get_base64_encoded_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode("utf-8")
 
-
-def create_html(encoded_image):
-    """Base64でエンコードされた画像データを用いて、HTMLファイルを作成し、画像を埋め込む"""
-    html_str = f"""
-    <html>
-    <body>
-    <img src="data:image/png;base64,{encoded_image}" alt="Nutrient Intake Graph">
-    </body>
-    </html>
-    """
-
-    with open("dashboard.html", "w") as html_file:
-        html_file.write(html_str)
 
 
 def get_image_data():
@@ -179,16 +170,6 @@ def get_image_data():
 
 
 
-# main関数
-def main():
-    """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
-    dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
-    generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
-
-    encoded_image = get_base64_encoded_image("nutrient_intake.png")
-    create_html(encoded_image)
-
-
 """if __name__ == "generate_graph":"""
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+    #main()
