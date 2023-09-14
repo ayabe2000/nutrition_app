@@ -170,6 +170,3 @@ def get_image_data():
 
 
 
-"""if __name__ == "generate_graph":"""
-#if __name__ == "__main__":
-    #main()
