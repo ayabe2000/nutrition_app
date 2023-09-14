@@ -1,3 +1,4 @@
+"""FlaskやDjangoといったPythonのウェブフレームワークにおいて、ウェブアプリケーションの"ビュー"層を定義"""
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user
@@ -13,10 +14,9 @@ from models import (
 )
 from utils import get_available_foods
 from models import create_new_food_entry
-from generate_graph import generate_graph, fetch_data
-import logging
-import matplotlib.pyplot as plt
-import matplotlib
+
+
+from generate_graph import get_image_data
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -77,39 +77,23 @@ def dashboard():
     form = FoodEntryForm()
     available_foods = get_available_foods()
     nutrients_data_today = None
-    selected_date = form.date.data  # 選択された日付を初期化
+    selected_date = form.date.data
 
-    # 選択肢を動的に設定
     form.name.choices = [(food, food) for food in available_foods]
 
     if form.validate_on_submit() and current_user.is_authenticated:
-        selected_date = form.date.data  # フォームから選択された日付を取得
-
-        # 今日の栄養データの取得
-        today = datetime.now().date()
-        nutrients_data_today = get_nutrients_data_today(today)
-        print("nutrients_data_today:", nutrients_data_today)
-
-        # デイリーナットリエントの作成/更新
-        user_id = current_user.id  # または適切なユーザーIDを取得
-        update_daily_nutrient(user_id, nutrients_data_today, selected_date)
-
-        dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
-        print("Dates:", dates)  # デバッグメッセージ：日付データを表示
-        print("Protein:", protein) 
-
-        logging.info("Fetched new data and generating graph...")
-
-        # グラフの更新
-        generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
-        matplotlib.use('Agg')
-        plt.show()  # グラフを表示
+        selected_date = form.date.data
+        nutrients_data_today = handle_form_submission(form)
 
     all_entries = FoodEntry.query.order_by(FoodEntry.date.desc()).all()
     nutrients_data = compute_nutrients(all_entries)
     entries = group_entries_by_date(all_entries)
 
     available_foods = get_available_foods()
+    
+
+    encoded_image = get_image_data()
+
 
     return render_template(
         "dashboard.html",
@@ -118,7 +102,10 @@ def dashboard():
         nutrients_data=nutrients_data,
         entries=entries,
         available_foods=available_foods,
-        selected_date=selected_date,  # テンプレートに選択された日付を渡す
+        selected_date=selected_date,
+
+        encoded_image=encoded_image
+
     )
 
 
@@ -175,10 +162,6 @@ def update_daily_nutrient(user_id, nutrients_data_today, selected_date):
     daily_nutrient.total_fat = nutrients_data_today["Fat"]
 
     db.session.commit()
-
-    print(
-        f"Daily nutrient updated for user {user_id} on {selected_date} with data: {nutrients_data_today}"
-    )
 
 
 def compute_nutrients(entries, debug_mode=False):
@@ -280,6 +263,7 @@ def group_entries_by_date(all_entries):
 
 @main_blueprint.route("/edit_food/<int:id>", methods=["GET", "POST"])
 def edit_food(id):
+    """食品エントリの編集"""
     entry = FoodEntry.query.get(id)
     form = EditGramsForm()
     print("Entry:", entry)
@@ -303,6 +287,7 @@ def edit_food(id):
 
 @main_blueprint.route("/delete_food/<int:id>", methods=["POST"])
 def delete_food(id):
+    """食品エントリの削除"""
     entry = FoodEntry.query.get(id)
     if entry:
         db.session.delete(entry)
