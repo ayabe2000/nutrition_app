@@ -2,7 +2,4 @@ venv
 __pycache__
 *.log
 *.db
-*.txt
-nutrient_intake.png
-new_venv
 static
