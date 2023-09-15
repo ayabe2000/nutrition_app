@@ -140,7 +140,7 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig("nutrient_intake.png")
+    plt.savefig("static/nutrient_intake.png")
 
     print("Graph Data Points:")
     print("Dates:", dates)
@@ -165,11 +165,9 @@ def get_image_data():
     dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
     generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
 
-    encoded_image = get_base64_encoded_image("nutrient_intake.png")
+    encoded_image = get_base64_encoded_image("static/nutrient_intake.png")
+
     return encoded_image
 
 
 
-"""if __name__ == "generate_graph":"""
-#if __name__ == "__main__":
-    #main()
