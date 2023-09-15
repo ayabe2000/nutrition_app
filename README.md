@@ -17,8 +17,8 @@
 1. プロジェクトのクローン
 
    ```bash
-   git clone https://github.com/ayabe2000/nutrition_app4
-   cd nutrition_app4
+   git clone https://github.com/ayabe2000/nutrition_app.git
+   cd nutrition_app
 
 2,仮想環境の作成とアクティベーション
 
@@ -34,6 +34,12 @@
     flask db init
     flask db migrate
     flask db upgrade
+
+'flask db init'コマンドは新しいマイグレーションリポジトリを初期化しますが、
+既存の'migrations'ディレクトリが問題を引き起こす可能性があります。
+その場合は、既存の'migrations'ディレクトリをバックアップまたはリネームします。
+
+mv migrations migrations_backup
 
 5,サーバーの起動
 
@@ -60,12 +66,30 @@
    - プロジェクトのルートディレクトリに移動し、仮想環境をアクティベートします。
 
      source venv/bin/activate
+   
+   - コマンドラインから独立して実行することができるように設計されています。
+   - 以下の手順でExcelファイルからデータをデータベースに取り込みます。ファイル名やパスは実際のファイルに合わせて変更してください。
+   - コマンドラインから以下のコマンドを実行してスクリプトを直接実行します
+   - Flaskアプリケーションを起動します。app.py 内で app.run(debug=True) を呼び出すことで、アプリケーションが実行されます。その後、別のターミナルで flask import-nutrition-data を実行できます。
 
 
-   - 以下のコマンドを使用して、Excelファイルからデータをデータベースに取り込みます。ファイル名やパスは実際のファイルに合わせて変更してください。
+   - コマンドラインから以下のコマンドを実行してスクリプトを直接実行します
+     
+     python import_data.py
 
+   - 新しいターミナルウィンドウを開きます。
+     
+   - Flaskアプリケーションを起動するために、以下のコマンドを実行します。これにより、アプリケーションがバックグラウンドで実行されます。
+
+     flask run
+  
+   - 別のターミナルウィンドウを開き、以下のコマンドを使用して「flask import-nutrition-data」を実行します。
+  
      flask import-nutrition-data /mnt/c/Users/user/Downloads/food_data.xlsx
 
-   - データの取り込みが完了すると、栄養素情報がデータベースに登録されます。
 
-これで、Excelファイルから栄養素情報をデータベースに効率的に登録できます。
+   - データの取り込みが完了すると、栄養素情報がデータベースに登録されます。
+  
+   - 取り込みが成功したら、SQLiteコマンドを使用してデータベースをクエリし、データが正しくインポートされたことを確認します。
+
+これで、Excelファイルから栄養素情報をデータベースに登録できます。
