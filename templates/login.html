@@ -2,42 +2,43 @@
 <html>
 <head>
     <title>栄養アプリへようこそ</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-    <h1>栄養アプリへようこそ</h1>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
 
-<!--POSTメソッドでlogin_pageというエンドポイントにデータを送信-->
+    <h1 class="text-3xl font-bold mb-8">栄養アプリへようこそ</h1>
 
-<form method="post"  action="{{ url_for('main.login_page') }}">
+    <div class="bg-white p-6 rounded shadow-md w-96">
+        <h2 class="text-xl font-semibold mb-4">ログイン</h2>
+        <form method="post" action="{{ url_for('main.login_page') }}" class="space-y-4">
+            {{ login_form.csrf_token }}
+            <div>
+                <label for="username" class="block text-gray-700">ユーザ名:</label>
+                {{ login_form.username(class="block w-full p-2 border rounded", placeholder="ユーザ名を入力", required=True) }}
+            </div>
+            <div>
+                <label for="password" class="block text-gray-700">パスワード:</label>
+                {{ login_form.password(class="block w-full p-2 border rounded", placeholder="パスワードを入力", required=True) }}
+            </div>
+            <button type="submit" name="submit_login" class="block w-full p-2 bg-blue-500 text-white rounded">ログイン</button>
+        </form>
+    </div>
 
-    {{ login_form.csrf_token }}
-    <label for="username">ユーザ名:</label>
-    {{ login_form.username(size=20, required=True) }} <!--required=Trueがあるとユーザーが値を入力しないとフォームが送信できなくさせられる-->
-    <br>
-    <label for="password">パスワード:</label>
-    {{ login_form.password(size=20, required=True) }}
-    <br>
-    <input type="submit" name="submit_login" value="ログイン"> <!--submitはフォームの送信アクションを表す要素-->
-</form>
-
-<!-- RegistrationForm のフィールド表示部分 -->
-<form method="post" action="{{ url_for('main.login_page') }}">
-
-
-    {{ register_form.csrf_token }}
-    <label for="new_username">新しいユーザー名：</label>
-    {{ register_form.new_username(size=20, required=True) }}
-    <br>
-    <label for="new_password">新しいパスワード：</label>
-    {{ register_form.new_password(size=20, required=True) }}
-    <br>
-    <input type="submit" name="submit_register" value="登録">
-</form>
-
-
-
+    <div class="bg-white p-6 rounded shadow-md w-96 mt-8">
+        <h2 class="text-xl font-semibold mb-4">新規登録</h2>
+        <form method="post" action="{{ url_for('main.login_page') }}" class="space-y-4">
+            {{ register_form.csrf_token }}
+            <div>
+                <label for="new_username" class="block text-gray-700">新しいユーザー名：</label>
+                {{ register_form.new_username(class="block w-full p-2 border rounded", placeholder="新しいユーザー名を入力", required=True) }}
+            </div>
+            <div>
+                <label for="new_password" class="block text-gray-700">新しいパスワード：</label>
+                {{ register_form.new_password(class="block w-full p-2 border rounded", placeholder="新しいパスワードを入力", required=True) }}
+            </div>
+            <button type="submit" name="submit_register" class="block w-full p-2 bg-green-500 text-white rounded">登録</button>
+        </form>
+    </div>
     
-   
 </body>
 </html>
-

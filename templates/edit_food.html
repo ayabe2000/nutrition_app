@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html>
-
-    <body>
+<head>
+    <title>食品エントリの編集</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded shadow-md w-96">
         {% block content %}
-            <h1>食品エントリの編集</h1>
+            <h1 class="text-2xl font-bold mb-4">食品エントリの編集</h1>
             {% if error_message %}
-                <p style="color: red;">{{ error_message }}</p>
+                <p class="text-red-500 mb-4">{{ error_message }}</p>
             {% endif %}
-            <form method="POST">
+            <form method="POST" class="space-y-4">
                 {{ form.hidden_tag() }}
-                <label for="grams">新しいグラム数:</label>
-                {{ form.grams(size=32) }} <!-- Flask-WTF フォームフィールドを使用 -->
-                <button type="submit">更新</button>
+                <div>
+                    <label for="grams" class="block text-gray-700">新しいグラム数:</label>
+                    {{ form.grams(class="block w-full p-2 border rounded", size=32) }} <!-- Flask-WTF フォームフィールドを使用 -->
+                </div>
+                <button type="submit" class="block w-full p-2 bg-blue-500 text-white rounded">更新</button>
             </form>
-            <p><a href="{{ url_for('main.dashboard') }}">ダッシュボードに戻る</a></p>              
+            <p class="mt-4">
+                <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 underline">ダッシュボードに戻る</a>
+            </p>              
         {% endblock %}
-
-    </body>
-
+    </div>
+</body>
+</html>
