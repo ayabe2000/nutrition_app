@@ -7,6 +7,7 @@ import base64
 from datetime import datetime
 
 from models import Food
+from io import BytesIO
 
 
 foods = [
@@ -140,32 +141,23 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig("static/nutrient_intake.png")
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
 
-    print("Graph Data Points:")
-    print("Dates:", dates)
-    print("Protein:", protein)
-    print("Energy:", energy)
-    print("Fat:", fat)
-    print("Cholesterol:", cholesterol)
-    print("Carbohydrates:", carbohydrates)
+    img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    buffer.close()
 
+    return img_base64
 
-
-
-def get_base64_encoded_image(image_path):
-    """画像をBase64でエンコードしHTMLに埋め込む"""
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode("utf-8")
 
 
 
 def get_image_data():
-    """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
+    """fetch_data, generate_graph関数を順番に呼び出し、プロセスを実行"""
     dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
-    generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
+    encoded_image = generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
 
-    encoded_image = get_base64_encoded_image("static/nutrient_intake.png")
 
     return encoded_image
 
