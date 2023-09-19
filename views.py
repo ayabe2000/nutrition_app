@@ -86,6 +86,7 @@ def dashboard():
     available_foods = get_available_foods()
     nutrients_data_today = None
     selected_date = form.date.data
+    user_id = session.get('user_id')
 
     form.name.choices = [(food, food) for food in available_foods]
 
@@ -100,7 +101,7 @@ def dashboard():
     available_foods = get_available_foods()
     
 
-    encoded_image = get_image_data()
+    encoded_image = get_image_data(user_id)
 
 
     return render_template(

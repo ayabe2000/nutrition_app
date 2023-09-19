@@ -161,11 +161,8 @@ def get_base64_encoded_image(image_path):
 
 
 
-def get_image_data():
+def get_image_data(user_id):
     """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
-    user_id = session.get('user_id')
-    if user_id is None:
-        return "User not logged in", 401
 
     dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data(user_id)
     generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
