@@ -79,7 +79,7 @@ foods = [
 def fetch_data():
     """データベースから日付ごとの栄養素摂取量を取得"""
 
-    """engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")"""
+
     engine = create_engine("sqlite:///instance/nutrition_app.db")
 
     connection = engine.connect()
@@ -111,13 +111,7 @@ def fetch_data():
         cholesterol.append(row[4]) 
         carbohydrates.append(row[5])  
 
-    print("Fetched Data:")
-    print("Dates:", dates)
-    print("Protein:", protein)
-    print("Energy:", energy)
-    print("Fat:", fat)
-    print("Cholesterol:", cholesterol)
-    print("Carbohydrates:", carbohydrates)
+
 
     connection.close()
 
@@ -142,13 +136,6 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
 
     plt.savefig("static/nutrient_intake.png")
 
-    print("Graph Data Points:")
-    print("Dates:", dates)
-    print("Protein:", protein)
-    print("Energy:", energy)
-    print("Fat:", fat)
-    print("Cholesterol:", cholesterol)
-    print("Carbohydrates:", carbohydrates)
 
 
 
