@@ -1,6 +1,6 @@
 """FlaskやDjangoといったPythonのウェブフレームワークにおいて、ウェブアプリケーションの"ビュー"層を定義"""
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash,session 
 from flask_login import login_user, current_user
 from forms import LoginForm, RegistrationForm, FoodEntryForm, EditGramsForm
 from models import (
@@ -44,6 +44,7 @@ def login_page():
                 if user:
                     if user and user.check_password(login_form.password.data):
                         login_user(user)
+                        session['user_id'] = user.id
                         return redirect(url_for("main.dashboard"))
         elif "submit_register" in request.form:
             if register_form.validate_on_submit():
@@ -65,10 +66,17 @@ def login_page():
                 db.session.commit()
 
                 login_user(new_user)
+                session['user_id'] = new_user.id 
                 return redirect(url_for("main.dashboard"))
     return render_template(
         "login.html", login_form=login_form, register_form=register_form
     )
+
+@main_blueprint.route('/logout',methods=['POST'])
+def logout():
+    session.clear() 
+    return redirect(url_for('main.login_page')) 
+
 
 
 @main_blueprint.route("/dashboard", methods=["GET", "POST"])
