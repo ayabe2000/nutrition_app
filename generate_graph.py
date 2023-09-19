@@ -141,12 +141,11 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
+    with BytesIO() as buffer:
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
 
-    img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
-    buffer.close()
+        img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
 
     return img_base64
 
