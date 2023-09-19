@@ -1,6 +1,6 @@
 """データベースにデータを追加し、そのデータを取得してグラフ化し、そのグラフをHTMLファイルに埋め込む"""
 from sqlalchemy import create_engine, text
-from flask import current_app as app,session
+from flask import current_app as app
 
 import matplotlib.pyplot as plt
 import base64
