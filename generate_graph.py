@@ -77,7 +77,7 @@ foods = [
     },
 ]
 
-def fetch_data():
+def fetch_data(user_id):
     """データベースから日付ごとの栄養素摂取量を取得"""
 
 
@@ -85,7 +85,8 @@ def fetch_data():
 
     connection = engine.connect()
     result = connection.execute(
-        text("SELECT date, SUM(protein) as protein, SUM(energy_kcal) as energy, SUM(fat) as fat, SUM(cholesterol) as cholesterol, SUM(carbohydrates) as carbohydrates FROM food_entry WHERE date IS NOT NULL GROUP BY date")
+        text("SELECT date, SUM(protein) as protein, SUM(energy_kcal) as energy, SUM(fat) as fat, SUM(cholesterol) as cholesterol, SUM(carbohydrates) as carbohydrates FROM food_entry WHERE date IS NOT NULL AND user_id = :user_id GROUP BY date"),
+        user_id=user_id
     )
 
     dates = []
@@ -150,10 +151,13 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
 
 
 
-def get_image_data():
-    """fetch_data, generate_graph関数を順番に呼び出し、プロセスを実行"""
-    dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data()
-    encoded_image = generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
+
+def get_image_data(user_id):
+    """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
+
+    dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data(user_id)
+    generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
+
 
 
     return encoded_image
