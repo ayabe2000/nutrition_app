@@ -2,14 +2,33 @@
 <html>
 <head>
     <title>栄養アプリへようこそ</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clifford: '#000080',
+                        customGreen: '#006400'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen content-auto">
 
-    <h1 class="text-3xl font-bold mb-8">栄養アプリへようこそ</h1>
+    <h1 class="text-3xl font-bold mb-8 text-black">栄養アプリへようこそ</h1>
 
     <div class="bg-white p-6 rounded shadow-md w-96">
-        <h2 class="text-xl font-semibold mb-4">ログイン</h2>
+        <h2 class="text-xl font-semibold mb-4 text-black">ログイン</h2>
         <form method="post" action="{{ url_for('main.login_page') }}" class="space-y-4">
             {{ login_form.csrf_token }}
             <div>
@@ -20,7 +39,7 @@
                 <label for="password" class="block text-gray-700">パスワード:</label>
                 {{ login_form.password(class="block w-full p-2 border rounded", placeholder="パスワードを入力", required=True) }}
             </div>
-            <button type="submit" name="submit_login" class="block w-full p-2 bg-blue-500 text-white rounded">ログイン</button>
+            <button type="submit" name="submit_login" class="block w-full p-2 bg-clifford text-white rounded">ログイン</button>
         </form>
     </div>
 
@@ -36,7 +55,7 @@
                 <label for="new_password" class="block text-gray-700">新しいパスワード：</label>
                 {{ register_form.new_password(class="block w-full p-2 border rounded", placeholder="新しいパスワードを入力", required=True) }}
             </div>
-            <button type="submit" name="submit_register" class="block w-full p-2 bg-green-500 text-white rounded">登録</button>
+            <button type="submit" name="submit_register" class="block w-full p-2 bg-customGreen text-white rounded">登録</button>
         </form>
     </div>
     

@@ -2,14 +2,21 @@
 <html>
 <head>
     <title>食品エントリの編集</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
-    <div class="bg-white p-6 rounded shadow-md w-96">
+    <div class="bg-white p-6 rounded shadow-md w-96 content-auto">
         {% block content %}
-            <h1 class="text-2xl font-bold mb-4">食品エントリの編集</h1>
+            <h1 class="text-2xl font-bold mb-4 text-gray-700">食品エントリの編集</h1>
             {% if error_message %}
-                <p class="text-red-500 mb-4">{{ error_message }}</p>
+                <p class="bg-red-50 text-red-500 p-2 rounded mb-4">{{ error_message }}</p>
             {% endif %}
             <form method="POST" class="space-y-4">
                 {{ form.hidden_tag() }}
@@ -17,12 +24,13 @@
                     <label for="grams" class="block text-gray-700">新しいグラム数:</label>
                     {{ form.grams(class="block w-full p-2 border rounded", size=32) }} <!-- Flask-WTF フォームフィールドを使用 -->
                 </div>
-                <button type="submit" class="block w-full p-2 bg-blue-500 text-white rounded">更新</button>
+                <button type="submit" class="block w-full p-2 bg-blue-500 hover:bg-blue-700 text-white rounded">更新</button>
             </form>
             <p class="mt-4">
-                <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 underline">ダッシュボードに戻る</a>
+                <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 underline hover:text-blue-700">ダッシュボードに戻る</a>
             </p>              
         {% endblock %}
     </div>
 </body>
 </html>
+
