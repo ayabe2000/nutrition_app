@@ -1,5 +1,5 @@
 """このモジュールはデータをインポートに関連する関数を含む"""
-
+import sys
 import pandas as pd
 import logging
 from app import db, create_app
@@ -91,10 +91,17 @@ def import_food_data_from_excel(excel_path):
         except ValueError as value_error:
             logging.error(
                 f"An error occurred while reading the Excel data: {value_error}"
-            )  # 2. ログを出力
+            )
+
 
 
 if __name__ == "__main__":
+    if len(sys.argv)<2:
+        print("Usage: python import_data.py <path_to_excel_file>")
+        sys.exit(1)
+
+    excel_file_path = sys.argv[1]
+    
     app_instance = create_app()
     with app_instance.app_context():
-        import_food_data_from_excel("/mnt/c/Users/user/Downloads/food_data.xlsx")
+        import_food_data_from_excel(excel_file_path)
