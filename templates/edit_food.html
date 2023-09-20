@@ -4,6 +4,31 @@
     <body>
         {% block content %}
             <h1>食品エントリの編集</h1>
+
+            編集対象日付: {{ entry.date.strftime('%Y-%m-%d') }}<br>
+
+            食品名: {{ entry.food_name }}<br>
+
+            <h2>その日に登録されている食品の一覧</h2>
+
+            <ul>
+                {% if food_entries %}
+                    {% for food_entry in food_entries %}
+                        <li>
+                            食品名: {{ food_entry.food_name }},
+                            重さ: {{ food_entry.grams }}g,
+                            タンパク質: {{ food_entry.protein }}g,
+                            脂質: {{ food_entry.fat }}g,
+                            コレステロール: {{ food_entry.cholesterol }}mg,
+                            炭水化物: {{ food_entry.carbohydrates }}g,
+                            エネルギー: {{ food_entry.energy_kcal }}kcal
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>食品エントリがありません</li>
+                {% endif %}
+            </ul>
+
             {% if error_message %}
                 <p style="color: red;">{{ error_message }}</p>
             {% endif %}
@@ -13,7 +38,7 @@
                 {{ form.grams(size=32) }} <!-- Flask-WTF フォームフィールドを使用 -->
                 <button type="submit">更新</button>
             </form>
-            <p><a href="{{ url_for('main.dashboard') }}">ダッシュボードに戻る</a></p>              
+            <p><a href="{{ url_for('main.dashboard') }}">ダッシュボードに戻る</a></p>
         {% endblock %}
 
     </body>

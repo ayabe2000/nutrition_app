@@ -287,10 +287,23 @@ def edit_food(id):
             error_message = "新しいグラム数を入力してください"
     else:
         error_message = ""
+        
+    target_date = entry.date.date()
+    target_datetime_start = datetime.combine(target_date, datetime.min.time())
+    target_datetime_end = datetime.combine(target_date, datetime.max.time())
+
+    food_entries = FoodEntry.query.filter(
+        FoodEntry.user_id == entry.user_id, 
+        FoodEntry.date >= target_datetime_start, 
+        FoodEntry.date <= target_datetime_end
+    ).all()
+
+
+
 
     print("Entry object before render_template:", entry)
     return render_template(
-        "edit_food.html", entry=entry, error_message=error_message, form=form
+        "edit_food.html", entry=entry, error_message=error_message, form=form,food_entries=food_entries
     )
 
 
