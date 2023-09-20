@@ -7,6 +7,7 @@ import base64
 from datetime import datetime
 
 from models import Food
+from io import BytesIO
 
 
 foods = [
@@ -79,7 +80,7 @@ foods = [
 def fetch_data(user_id):
     """データベースから日付ごとの栄養素摂取量を取得"""
 
-    """engine = create_engine("sqlite:////root/nutrition_app4/nutrition_app4.db")"""
+
     engine = create_engine("sqlite:///instance/nutrition_app.db")
 
     connection = engine.connect()
@@ -112,13 +113,7 @@ def fetch_data(user_id):
         cholesterol.append(row[4]) 
         carbohydrates.append(row[5])  
 
-    print("Fetched Data:")
-    print("Dates:", dates)
-    print("Protein:", protein)
-    print("Energy:", energy)
-    print("Fat:", fat)
-    print("Cholesterol:", cholesterol)
-    print("Carbohydrates:", carbohydrates)
+
 
     connection.close()
 
@@ -141,23 +136,19 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig("static/nutrient_intake.png")
 
-    print("Graph Data Points:")
-    print("Dates:", dates)
-    print("Protein:", protein)
-    print("Energy:", energy)
-    print("Fat:", fat)
-    print("Cholesterol:", cholesterol)
-    print("Carbohydrates:", carbohydrates)
+    with BytesIO() as buffer:
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
 
 
 
 
-def get_base64_encoded_image(image_path):
-    """画像をBase64でエンコードしHTMLに埋め込む"""
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode("utf-8")
+        img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+
+    return img_base64
+
+
 
 
 
@@ -167,7 +158,7 @@ def get_image_data(user_id):
     dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data(user_id)
     generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
 
-    encoded_image = get_base64_encoded_image("static/nutrient_intake.png")
+
 
     return encoded_image
 
