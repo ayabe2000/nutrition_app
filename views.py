@@ -95,8 +95,8 @@ def dashboard():
         nutrients_data_today = handle_form_submission(form)
 
     all_entries = FoodEntry.query.order_by(FoodEntry.date.desc()).all()
-    nutrients_data = compute_nutrients(all_entries)
-    entries = group_entries_by_date(all_entries)
+    nutrients_data = compute_nutrients(all_entries, user_id)
+    entries = group_entries_by_date(all_entries, user_id)
 
     available_foods = get_available_foods()
     
@@ -139,7 +139,7 @@ def handle_form_submission(form):
         db.session.commit()
 
         today = datetime.utcnow().date()
-        nutrients_data_today = get_nutrients_data_today(today)
+        nutrients_data_today = get_nutrients_data_today(user_id,today)
 
         update_daily_nutrient(user_id, nutrients_data_today, selected_date)
 
@@ -148,13 +148,14 @@ def handle_form_submission(form):
     return {"error": "Food not found in the database"}
 
 
-def get_nutrients_data_today(today):
+def get_nutrients_data_today(user_id,today):
     """今日の栄養データの計算"""
     end_of_today = today + timedelta(days=1) - timedelta(seconds=1)
     today_entries = FoodEntry.query.filter(
+        FoodEntry.user_id == user_id,
         FoodEntry.date.between(today, end_of_today)
     ).all()
-    return compute_nutrients(today_entries)
+    return compute_nutrients(today_entries,user_id)
 
 
 def update_daily_nutrient(user_id, nutrients_data_today, selected_date):
@@ -173,8 +174,10 @@ def update_daily_nutrient(user_id, nutrients_data_today, selected_date):
     db.session.commit()
 
 
-def compute_nutrients(entries, debug_mode=False):
+def compute_nutrients(entries, user_id, debug_mode=False):
     """全エントリーの取得と栄養データの計算"""
+    user_entries = [entry for entry in entries if hasattr(entry, 'user_id') and entry.user_id == user_id]
+    
     nutrients_data = {
         "Protein": 0,
         "Carbohydrates": 0,
@@ -183,7 +186,7 @@ def compute_nutrients(entries, debug_mode=False):
         "Energy_kcal": 0,
     }
 
-    for entry in entries:
+    for entry in user_entries:
         if isinstance(entry, FoodEntry):
             entry_dict = {
                 "protein": entry.protein,
@@ -229,10 +232,13 @@ def compute_nutrients(entries, debug_mode=False):
     return nutrients_data
 
 
-def group_entries_by_date(all_entries):
+def group_entries_by_date(all_entries, user_id):
     """グループ化されたエントリーの作成"""
+
+    user_entries = [entry for entry in all_entries if entry.user_id == user_id]
+
     grouped_entries = {}
-    for entry in all_entries:
+    for entry in user_entries:
         date_str = entry.date.strftime("%Y-%m-%d")
         if date_str not in grouped_entries:
             if len(grouped_entries) >= 10:  # 10日分のデータのみ保持
