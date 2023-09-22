@@ -1,7 +1,8 @@
 """FlaskやDjangoといったPythonのウェブフレームワークにおいて、ウェブアプリケーションの"ビュー"層を定義"""
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, redirect, url_for, request, flash,session 
+from flask import Blueprint, render_template, redirect, url_for, request, flash,session
 from flask_login import login_user, current_user
+from sqlalchemy import or_
 from forms import LoginForm, RegistrationForm, FoodEntryForm, EditGramsForm
 from models import (
     User,
@@ -9,14 +10,13 @@ from models import (
     Food,
     DailyNutrient,
     db,
-    get_food_by_name,
     create_new_food_entry,
 )
-from utils import get_available_foods
 from models import create_new_food_entry
 
 
 from generate_graph import get_image_data
+import jaconv
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -83,23 +83,26 @@ def logout():
 def dashboard():
     """フォームデータの取得と処理"""
     form = FoodEntryForm()
-    available_foods = get_available_foods()
     nutrients_data_today = None
     selected_date = form.date.data
     user_id = session.get('user_id')
 
-    form.name.choices = [(food, food) for food in available_foods]
-
     if form.validate_on_submit() and current_user.is_authenticated:
-        selected_date = form.date.data
-        nutrients_data_today = handle_form_submission(form)
+
+        response_data = handle_form_submission(form)
+
+        if "error" not in response_data:
+            nutrients_data_today = response_data
+
+        else:
+            print(response_data["error"])
+
+      
 
     all_entries = FoodEntry.query.order_by(FoodEntry.date.desc()).all()
     nutrients_data = compute_nutrients(all_entries)
     entries = group_entries_by_date(all_entries)
 
-    available_foods = get_available_foods()
-    
 
     encoded_image = get_image_data(user_id)
 
@@ -110,9 +113,7 @@ def dashboard():
         nutrients_data_today=nutrients_data_today,
         nutrients_data=nutrients_data,
         entries=entries,
-        available_foods=available_foods,
         selected_date=selected_date,
-
         encoded_image=encoded_image
 
     )
@@ -132,7 +133,7 @@ def handle_form_submission(form):
         user_id = current_user.id
         selected_date = form.date.data
         new_entry = create_new_food_entry(
-            food, food_name, grams, user_id, selected_date
+            food_name, grams, user_id, selected_date
         )
 
         db.session.add(new_entry)
@@ -305,3 +306,24 @@ def delete_food(id):
     else:
         flash("エントリが見つかりません", "error")
     return redirect(url_for("main.dashboard"))
+
+
+@main_blueprint.route('/search_food')
+def search_food():
+    query = request.args.get('query')  # クエリパラメータを取得
+
+    if query:
+        hiragana_query = jaconv.kata2hira(query)
+        results = Food.query.filter(
+            or_(
+            Food.name.like(f'%{query}%'), # カタカナの検索
+            Food.name.like(f'%{hiragana_query}%')  # ひらがなの検索
+            )
+        ).all()
+            
+    else:
+        results = []  # クエリが指定されていない場合、空のリストを使用
+
+    # 検索結果を search_results.html テンプレートに渡す
+    return render_template('search_results.html', results=results)
+

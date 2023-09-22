@@ -2,6 +2,35 @@
 <html>
 <head>
     <title>ダッシュボード</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#food-search').on('input', function(){
+                // 食品を検索するロジックを実装
+                var query = $(this).val();
+                if(query.length > 1){
+                    $.ajax({
+                        url: '/search_food',
+                        method: 'GET',
+                        data: {query: query},
+                        success: function(response){
+                            $('#food-results').html(response);
+                        }
+                    });
+                }
+            });
+
+            // 選択された食品名を取得
+            $('#food-results').on('click', '.food-item', function(){
+                var selectedFood = $(this).text();
+                $('#selected-food-name').val(selectedFood);
+            });
+        });
+
+
+</script>
+
+
 </head>
 <body>
 
@@ -17,8 +46,6 @@
 
     </ul>
 
-
-
     <div class="food-entry-form">
         <h2>Add Food Entry</h2>
         <form method="POST" action="/dashboard">
@@ -28,22 +55,16 @@
             </div>
             {{ form.hidden_tag() }}
             <div class="form-group">
-                {{ form.name.label }}
-                {{ form.name(class="form-control") }} 
-            </div>
-            <div class="form-group">
-                {{ form.grams.label }} {{ form.grams(size=5) }}
+                <input type="text" id="food-search" placeholder="食品を検索">
+                <div id="food-results"></div>
+                <input type="text" id="selected-food-name" name="name" placeholder="選択された食品">
+                <input type="number" id="grams" name="grams" placeholder="グラム数を入力">
             </div>
             <div class="form-group">
                 {{ form.submit_entry() }}
-
             </div>
         </form>
     </div>
-
-    
-
-
 
     <h2>履歴</h2>
     {% for entry in entries %}
