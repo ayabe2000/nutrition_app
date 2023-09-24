@@ -1,6 +1,5 @@
-
-Flask-SQLAlchemy==3.0.0
-SQLAlchemy<=1.5.8,>=1.4.18
+Flask-SQLAlchemy==3.0.2
+SQLAlchemy>=2.0.20
 matplotlib==3.5.1
 alembic==1.12.0
 blinker==1.6.2
@@ -10,7 +9,6 @@ cycler==0.11.0
 Flask==2.3.3
 Flask-Login==0.6.2
 Flask-Migrate==4.0.5
-Flask-SQLAlchemy==3.0.0
 fonttools==4.42.1
 greenlet==2.0.2
 itsdangerous==2.1.2
@@ -27,4 +25,10 @@ six==1.16.0
 SQLAlchemy==2.0.20
 typing_extensions==4.7.1
 Werkzeug==2.3.7
+Flask-WTF==1.1.1
+pandas==2.1.0
+openpyxl==3.1.2
+
+
+
 
