@@ -14,7 +14,36 @@
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
     <div class="bg-white p-6 rounded shadow-md w-96 content-auto">
         {% block content %}
+
+            <h1>食品エントリの編集</h1>
+
+            編集対象日付: {{ entry.date.strftime('%Y-%m-%d') }}<br>
+
+            食品名: {{ entry.food_name }}<br>
+
+            <h2>その日に登録されている食品の一覧</h2>
+
+            <ul>
+                {% if food_entries %}
+                    {% for food_entry in food_entries %}
+                        <li>
+                            食品名: {{ food_entry.food_name }},
+                            重さ: {{ food_entry.grams }}g,
+                            タンパク質: {{ food_entry.protein }}g,
+                            脂質: {{ food_entry.fat }}g,
+                            コレステロール: {{ food_entry.cholesterol }}mg,
+                            炭水化物: {{ food_entry.carbohydrates }}g,
+                            エネルギー: {{ food_entry.energy_kcal }}kcal
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>食品エントリがありません</li>
+                {% endif %}
+            </ul>
+
+
             <h1 class="text-2xl font-bold mb-4 text-gray-700">食品エントリの編集</h1>
+
             {% if error_message %}
                 <p class="bg-red-50 text-red-500 p-2 rounded mb-4">{{ error_message }}</p>
             {% endif %}
@@ -26,6 +55,9 @@
                 </div>
                 <button type="submit" class="block w-full p-2 bg-blue-500 hover:bg-blue-700 text-white rounded">更新</button>
             </form>
+      
+            <p><a href="{{ url_for('main.dashboard') }}">ダッシュボードに戻る</a></p>
+
             <p class="mt-4">
                 <a href="{{ url_for('main.dashboard') }}" class="text-blue-500 underline hover:text-blue-700">ダッシュボードに戻る</a>
             </p>              
