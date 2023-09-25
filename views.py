@@ -7,7 +7,7 @@ from forms import LoginForm, RegistrationForm, FoodEntryForm, EditGramsForm
 from models import (
     User,
     FoodEntry,
-    Food,
+    Food,https://github.com/ayabe2000/nutrition_app/pull/43/conflict?name=views.py&ancestor_oid=f1d6f26463bdeb5bc3811521cfcb5da5be8ae953&base_oid=5d96579c65c3eb60cb9cf37a0c4739d8b2a20881&head_oid=e4ed6e7ddf1e39cc1c41b325b46a2c84930e2d60
     DailyNutrient,
     db,
     create_new_food_entry,
@@ -85,7 +85,9 @@ def dashboard():
     form = FoodEntryForm()
     nutrients_data_today = None
     selected_date = form.date.data
+
     user_id = session.get('user_id')
+
 
     if form.validate_on_submit() and current_user.is_authenticated:
 
@@ -104,6 +106,7 @@ def dashboard():
     entries = group_entries_by_date(all_entries)
 
 
+
     encoded_image = get_image_data(user_id)
 
 
@@ -114,8 +117,7 @@ def dashboard():
         nutrients_data=nutrients_data,
         entries=entries,
         selected_date=selected_date,
-        encoded_image=encoded_image
-
+      　encoded_image = get_image_data(user_id)
     )
 
 
@@ -288,10 +290,23 @@ def edit_food(id):
             error_message = "新しいグラム数を入力してください"
     else:
         error_message = ""
+        
+    target_date = entry.date.date()
+    target_datetime_start = datetime.combine(target_date, datetime.min.time())
+    target_datetime_end = datetime.combine(target_date, datetime.max.time())
+
+    food_entries = FoodEntry.query.filter(
+        FoodEntry.user_id == entry.user_id, 
+        FoodEntry.date >= target_datetime_start, 
+        FoodEntry.date <= target_datetime_end
+    ).all()
+
+
+
 
     print("Entry object before render_template:", entry)
     return render_template(
-        "edit_food.html", entry=entry, error_message=error_message, form=form
+        "edit_food.html", entry=entry, error_message=error_message, form=form,food_entries=food_entries
     )
 
 
