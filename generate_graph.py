@@ -8,6 +8,75 @@ from io import BytesIO
 
 
 
+foods = [
+    {
+        "name": "こむぎ",
+        "protein_per_100g": 10.6,
+        "carbs_per_100g": 72.2,
+        "fat_per_100g": 10.6,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 337,
+    },
+    {
+        "name": "食パン",
+        "protein_per_100g": 9.3,
+        "carbs_per_100g": 46.7,
+        "fat_per_100g": 4.4,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 264,
+    },
+    {
+        "name": "うどん",
+        "protein_per_100g": 6.1,
+        "carbs_per_100g": 56,
+        "fat_per_100g": 0.8,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 270,
+    },
+    {
+        "name": "こめ",
+        "protein_per_100g": 6.8,
+        "carbs_per_100g": 74.3,
+        "fat_per_100g": 2.7,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 353,
+    },
+    {
+        "name": "いも",
+        "protein_per_100g": 1.9,
+        "carbs_per_100g": 14.7,
+        "fat_per_100g": 0.4,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 35,
+    },
+    {
+        "name": "あずき",
+        "protein_per_100g": 20.3,
+        "carbs_per_100g": 6.6,
+        "fat_per_100g": 0.2,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 339,
+    },
+    {
+        "name": "オクラ",
+        "protein_per_100g": 2.1,
+        "carbs_per_100g": 6.6,
+        "fat_per_100g": 0.2,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 30,
+    },
+    {
+        "name": "かぶ",
+        "protein_per_100g": 2.3,
+        "carbs_per_100g": 3.9,
+        "fat_per_100g": 0.2,
+        "cholesterol_per_100g": 1,
+        "energy_kcal_100g": 30,
+    },
+]
+
+
+
 
 def fetch_data(user_id):
     """データベースから日付ごとの栄養素摂取量を取得"""
