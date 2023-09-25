@@ -86,7 +86,11 @@ def dashboard():
     available_foods = get_available_foods()
     nutrients_data_today = None
     selected_date = form.date.data
+
+    username = current_user.username 
+
     user_id = session.get('user_id')
+
 
     form.name.choices = [(food, food) for food in available_foods]
 
@@ -99,6 +103,7 @@ def dashboard():
     entries = group_entries_by_date(all_entries)
 
     available_foods = get_available_foods()
+   
     
 
     encoded_image = get_image_data(user_id)
@@ -112,7 +117,7 @@ def dashboard():
         entries=entries,
         available_foods=available_foods,
         selected_date=selected_date,
-
+        username=username,
         encoded_image=encoded_image
 
     )
@@ -287,10 +292,23 @@ def edit_food(id):
             error_message = "新しいグラム数を入力してください"
     else:
         error_message = ""
+        
+    target_date = entry.date.date()
+    target_datetime_start = datetime.combine(target_date, datetime.min.time())
+    target_datetime_end = datetime.combine(target_date, datetime.max.time())
+
+    food_entries = FoodEntry.query.filter(
+        FoodEntry.user_id == entry.user_id, 
+        FoodEntry.date >= target_datetime_start, 
+        FoodEntry.date <= target_datetime_end
+    ).all()
+
+
+
 
     print("Entry object before render_template:", entry)
     return render_template(
-        "edit_food.html", entry=entry, error_message=error_message, form=form
+        "edit_food.html", entry=entry, error_message=error_message, form=form,food_entries=food_entries
     )
 
 
