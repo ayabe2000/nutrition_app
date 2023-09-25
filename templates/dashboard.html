@@ -2,31 +2,33 @@
 <html>
 <head>
     <title>ダッシュボード</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function(){
-            $('#food-search').on('input', function(){
-                // 食品を検索するロジックを実装
-                var query = $(this).val();
-                if(query.length > 1){
-                    $.ajax({
-                        url: '/search_food',
-                        method: 'GET',
-                        data: {query: query},
-                        success: function(response){
-                            $('#food-results').html(response);
-                        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBox = document.getElementById('food-search');
+            const resultsDiv = document.getElementById('food-results');
+            const selectedFoodName = document.getElementById('selected-food-name');
+
+            searchBox.addEventListener('input', function() {
+                let query = this.value;
+                if (query.length > 1) {
+                    fetch(`/search_food?query=${encodeURIComponent(query)}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        resultsDiv.innerHTML = data;
+
+                        let foodItems = resultsDiv.querySelectorAll('.food-item');
+                        foodItems.forEach(item => {
+                            item.addEventListener('click', function() {
+                                selectedFoodName.value = this.textContent;
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
                     });
                 }
             });
-
-            // 選択された食品名を取得
-            $('#food-results').on('click', '.food-item', function(){
-                var selectedFood = $(this).text();
-                $('#selected-food-name').val(selectedFood);
-            });
         });
-
 
 </script>
 
