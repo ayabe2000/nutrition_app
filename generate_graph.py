@@ -159,20 +159,6 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
 
     fig.tight_layout()
     plt.savefig("static/nutrient_intake.png")
-=======
-    plt.figure()
-    plt.plot(dates, protein, label="Protein (g)")
-    plt.plot(dates, energy, label="Energy (kcal)")
-    plt.plot(dates, fat, label="Fat (g)")
-    plt.plot(dates, cholesterol, label="Cholesterol (mg)")
-    plt.plot(dates, carbohydrates, label="Carbohydrates (g)")
-
-    plt.title("Nutrient Intake Over Time")
-    plt.xlabel("Date")
-    plt.ylabel("Intake")
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
 
 
 
