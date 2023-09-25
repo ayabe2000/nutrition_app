@@ -97,6 +97,56 @@
                 {% endfor %}
                 </ul>
             </div>
+
+        </form>
+    </div>
+
+<h2>履歴</h2>
+<table border="1" style="border-collapse:collapse">
+    <thead>
+        <tr>
+            <th>年月日</th>
+            <th>カロリー (kcal)</th>
+            <th>タンパク質 (g)</th>
+            <th>脂質 (g)</th>
+            <th>コレステロール (mg)</th>
+            <th>炭水化物 (g)</th>
+            <th>食品</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in entries %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.kcal }}</td>
+                <td>{{ entry.protein }}</td>
+                <td>{{ entry.fat }}</td>
+                <td>{{ entry.cholesterol }}</td>
+                <td>{{ entry.carbs }}</td>
+                <td>
+                    <ul>
+                        {% for food in entry.foods %}
+                            <li>
+                                {{ food.food_name }} ({{ food.grams }}g)
+                                <form method="GET" action="/edit_food/{{ food.id }}" style="display: inline;">
+                                    <button type="submit">編集</button>
+                                </form>
+                                <form method="POST" action="/delete_food/{{ food.id }}" style="display: inline;">
+                                    <button type="submit">削除</button>
+                                </form>
+                                
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<img src="data:image/png;base64,{{ encoded_image }}" alt="Nutrient Intake Graph">
+
         {% endfor %}
         
         <div class="mt-4">
@@ -106,6 +156,7 @@
     <form action="{{ url_for('main.logout') }}" method="POST">
         <button type="submit" class="btn btn-danger">Logout</button>
     </form>
+
 
 
 
