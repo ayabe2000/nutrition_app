@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 import logging
 from app import db, create_app
-from models import Food,convert_to_float
+from models import Food
 import sqlite3
 
 logging.basicConfig(filename="import_food.log", level=logging.INFO)
