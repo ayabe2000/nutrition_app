@@ -157,10 +157,6 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
 
     fig.delaxes(axes[2,1])
 
-    fig.tight_layout()
-    plt.savefig("static/nutrient_intake.png")
-
-
 
     with BytesIO() as buffer:
         plt.savefig(buffer, format='png')
