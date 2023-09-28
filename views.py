@@ -101,9 +101,9 @@ def dashboard():
 
       
 
-    all_entries = FoodEntry.query.order_by(FoodEntry.date.desc()).all()
-    nutrients_data = compute_nutrients(all_entries)
-    entries = group_entries_by_date(all_entries)
+    selected_food_nutrients = FoodEntry.query.filter(FoodEntry.user_id == user_id).all()
+    nutrients_data = compute_nutrients(selected_food_nutrients)
+    entries = group_entries_by_date(selected_food_nutrients)
 
 
 
@@ -178,6 +178,7 @@ def update_daily_nutrient(user_id, nutrients_data_today, selected_date):
 
 def compute_nutrients(entries, debug_mode=False):
     """全エントリーの取得と栄養データの計算"""
+ 
     nutrients_data = {
         "Protein": 0,
         "Carbohydrates": 0,
@@ -234,6 +235,7 @@ def compute_nutrients(entries, debug_mode=False):
 
 def group_entries_by_date(all_entries):
     """グループ化されたエントリーの作成"""
+
     grouped_entries = {}
     for entry in all_entries:
         date_str = entry.date.strftime("%Y-%m-%d")
