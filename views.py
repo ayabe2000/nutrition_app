@@ -1,22 +1,22 @@
 """FlaskやDjangoといったPythonのウェブフレームワークにおいて、ウェブアプリケーションの"ビュー"層を定義"""
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, redirect, url_for, request, flash,session 
+from flask import Blueprint, render_template, redirect, url_for, request, flash,session
 from flask_login import login_user, current_user
+from sqlalchemy import or_
 from forms import LoginForm, RegistrationForm, FoodEntryForm, EditGramsForm
 from models import (
     User,
     FoodEntry,
-    Food,
+    Food,https://github.com/ayabe2000/nutrition_app/pull/43/conflict?name=views.py&ancestor_oid=f1d6f26463bdeb5bc3811521cfcb5da5be8ae953&base_oid=5d96579c65c3eb60cb9cf37a0c4739d8b2a20881&head_oid=e4ed6e7ddf1e39cc1c41b325b46a2c84930e2d60
     DailyNutrient,
     db,
-    get_food_by_name,
     create_new_food_entry,
 )
-from utils import get_available_foods
 from models import create_new_food_entry
 
 
 from generate_graph import get_image_data
+import jaconv
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -83,23 +83,29 @@ def logout():
 def dashboard():
     """フォームデータの取得と処理"""
     form = FoodEntryForm()
-    available_foods = get_available_foods()
     nutrients_data_today = None
     selected_date = form.date.data
+
     user_id = session.get('user_id')
 
-    form.name.choices = [(food, food) for food in available_foods]
 
     if form.validate_on_submit() and current_user.is_authenticated:
-        selected_date = form.date.data
-        nutrients_data_today = handle_form_submission(form)
+
+        response_data = handle_form_submission(form)
+
+        if "error" not in response_data:
+            nutrients_data_today = response_data
+
+        else:
+            print(response_data["error"])
+
+      
 
     selected_food_nutrients = FoodEntry.query.filter(FoodEntry.user_id == user_id).all()
     nutrients_data = compute_nutrients(selected_food_nutrients)
     entries = group_entries_by_date(selected_food_nutrients)
 
-    available_foods = get_available_foods()
-    
+
 
     encoded_image = get_image_data(user_id)
 
@@ -110,11 +116,8 @@ def dashboard():
         nutrients_data_today=nutrients_data_today,
         nutrients_data=nutrients_data,
         entries=entries,
-        available_foods=available_foods,
         selected_date=selected_date,
-
-        encoded_image=encoded_image
-
+      　encoded_image = get_image_data(user_id)
     )
 
 
@@ -132,7 +135,7 @@ def handle_form_submission(form):
         user_id = current_user.id
         selected_date = form.date.data
         new_entry = create_new_food_entry(
-            food, food_name, grams, user_id, selected_date
+            food_name, grams, user_id, selected_date
         )
 
         db.session.add(new_entry)
@@ -289,10 +292,23 @@ def edit_food(id):
             error_message = "新しいグラム数を入力してください"
     else:
         error_message = ""
+        
+    target_date = entry.date.date()
+    target_datetime_start = datetime.combine(target_date, datetime.min.time())
+    target_datetime_end = datetime.combine(target_date, datetime.max.time())
+
+    food_entries = FoodEntry.query.filter(
+        FoodEntry.user_id == entry.user_id, 
+        FoodEntry.date >= target_datetime_start, 
+        FoodEntry.date <= target_datetime_end
+    ).all()
+
+
+
 
     print("Entry object before render_template:", entry)
     return render_template(
-        "edit_food.html", entry=entry, error_message=error_message, form=form
+        "edit_food.html", entry=entry, error_message=error_message, form=form,food_entries=food_entries
     )
 
 
@@ -307,3 +323,24 @@ def delete_food(id):
     else:
         flash("エントリが見つかりません", "error")
     return redirect(url_for("main.dashboard"))
+
+
+@main_blueprint.route('/search_food')
+def search_food():
+    query = request.args.get('query')  # クエリパラメータを取得
+
+    if query:
+        hiragana_query = jaconv.kata2hira(query)
+        results = Food.query.filter(
+            or_(
+            Food.name.like(f'%{query}%'), # カタカナの検索
+            Food.name.like(f'%{hiragana_query}%')  # ひらがなの検索
+            )
+        ).all()
+            
+    else:
+        results = []  # クエリが指定されていない場合、空のリストを使用
+
+    # 検索結果を search_results.html テンプレートに渡す
+    return render_template('search_results.html', results=results)
+
