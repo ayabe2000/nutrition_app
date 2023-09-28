@@ -3,7 +3,7 @@ name: Python CI
 on : 
   push:
       branches:
-        - test/issue-46
+        - ci/issue-47
   
 jobs :
   build:
