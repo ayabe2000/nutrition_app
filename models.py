@@ -130,11 +130,11 @@ def create_new_food_entry(food, grams, user_id, selected_date):
         return None
 
     # 食品の栄養情報を使用して新しいエントリを作成
-    protein_value = food.protein_per_100g
-    carbs_value = food.carbs_per_100g
-    fat_value = food.fat_per_100g
-    cholesterol_value = food.cholesterol_per_100g
-    energy_value = food.energy_kcal_100g
+    protein_value = food.protein_per_100g or 0
+    carbs_value = food.carbs_per_100g or 0
+    fat_value = food.fat_per_100g or 0
+    cholesterol_value = food.cholesterol_per_100g or 0
+    energy_value = food.energy_kcal_100g or 0
 
     protein = (protein_value / 100) * grams
     carbohydrates = (carbs_value / 100) * grams
