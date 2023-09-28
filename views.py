@@ -94,9 +94,9 @@ def dashboard():
         selected_date = form.date.data
         nutrients_data_today = handle_form_submission(form)
 
-    all_entries = FoodEntry.query.filter(FoodEntry.user_id == user_id).all()
-    nutrients_data = compute_nutrients(all_entries)
-    entries = group_entries_by_date(all_entries)
+    selected_food_nutrients = FoodEntry.query.filter(FoodEntry.user_id == user_id).all()
+    nutrients_data = compute_nutrients(selected_food_nutrients)
+    entries = group_entries_by_date(selected_food_nutrients)
 
     available_foods = get_available_foods()
     
