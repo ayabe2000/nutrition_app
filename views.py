@@ -7,7 +7,7 @@ from forms import LoginForm, RegistrationForm, FoodEntryForm, EditGramsForm
 from models import (
     User,
     FoodEntry,
-    Food,https://github.com/ayabe2000/nutrition_app/pull/43/conflict?name=views.py&ancestor_oid=f1d6f26463bdeb5bc3811521cfcb5da5be8ae953&base_oid=5d96579c65c3eb60cb9cf37a0c4739d8b2a20881&head_oid=e4ed6e7ddf1e39cc1c41b325b46a2c84930e2d60
+    Food,
     DailyNutrient,
     db,
     create_new_food_entry,
@@ -117,7 +117,7 @@ def dashboard():
         nutrients_data=nutrients_data,
         entries=entries,
         selected_date=selected_date,
-      　encoded_image = get_image_data(user_id)
+        encoded_image = get_image_data(user_id)
     )
 
 
@@ -135,8 +135,11 @@ def handle_form_submission(form):
         user_id = current_user.id
         selected_date = form.date.data
         new_entry = create_new_food_entry(
-            food_name, grams, user_id, selected_date
+            food, grams, user_id, selected_date
         )
+
+        if new_entry is None:
+            return {"error": "Failed to create a new food entry."}
 
         db.session.add(new_entry)
         db.session.commit()

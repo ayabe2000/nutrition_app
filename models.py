@@ -124,7 +124,6 @@ def get_food_by_name(food_name):
     return Food.query.filter_by(name=food_name).first()
 
 
-<
     if food:
         return food
     else:
@@ -148,7 +147,7 @@ def convert_to_float(value):
     except ValueError:
         return 0.0
 
-def create_new_food_entry(food_name, grams, user_id, selected_date):
+def create_new_food_entry(food, grams, user_id, selected_date):
     """新しい食品エントリの作成と追加"""
 
     food = get_food_by_name(food_name)
@@ -166,6 +165,7 @@ def create_new_food_entry(food_name, grams, user_id, selected_date):
         )
         return
 
+
     protein = (protein_per_100g / 100) * grams
     carbohydrates = (carbs_per_100g / 100) * grams
     fat = (fat_per_100g / 100) * grams
@@ -178,7 +178,7 @@ def create_new_food_entry(food_name, grams, user_id, selected_date):
 
     new_food_entry = FoodEntry(
         user_id=user_id,
-        food_name=cleaned_food_name,
+        food_name=food.name,
         grams=grams,
         protein=protein,
         fat=fat,
@@ -187,8 +187,5 @@ def create_new_food_entry(food_name, grams, user_id, selected_date):
         energy_kcal=energy_kcal,
         date=selected_date,
     )
-
-    db.session.add(new_food_entry)
-    db.session.commit()
 
     return new_food_entry
