@@ -135,39 +135,7 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     plt.xticks(rotation=45)
     plt.legend()
     plt.tight_layout()
-    fig,axes =plt.subplots(3,2,figsize=(10,10))
 
-    axes[0,0].plot(dates,protein,label="Protein(g)",color="b")
-    axes[0,0].set_title("Protein Intake Over Time")
-    axes[0,0].set_xlabel("Date")
-    axes[0,0].set_ylabel("Protein (g)")
-    axes[0,0].tick_params(axis="x",rotation=45)
-
-    axes[0,1].plot(dates,energy,label="Energy (kcal)",color="g")
-    axes[0,1].set_title("Energy Intake Over Time")
-    axes[0,1].set_xlabel("Date")
-    axes[0,1].set_ylabel("Energy (kcal)")
-    axes[0,1].tick_params(axis="x",rotation=45)
-    
-    axes[1,0].plot(dates,protein,label="Fat(g)",color="r")
-    axes[1,0].set_title("Fat Intake Over Time")
-    axes[1,0].set_xlabel("Date")
-    axes[1,0].set_ylabel("Fat (g)")
-    axes[1,0].tick_params(axis="x",rotation=45)
-
-    axes[1, 1].plot(dates, cholesterol, label="Cholesterol (mg)", color='c')
-    axes[1, 1].set_title("Cholesterol Intake Over Time")
-    axes[1, 1].set_xlabel("Date")
-    axes[1, 1].set_ylabel("Cholesterol (mg)")
-    axes[1, 1].tick_params(axis='x', rotation=45)
-
-    axes[2, 0].plot(dates, carbohydrates, label="Carbohydrates (g)", color='m')
-    axes[2, 0].set_title("Carbohydrates Intake Over Time")
-    axes[2, 0].set_xlabel("Date")
-    axes[2, 0].set_ylabel("Carbohydrates (g)")
-    axes[2, 0].tick_params(axis='x', rotation=45)
-
-    fig.delaxes(axes[2,1])
 
 
     with BytesIO() as buffer:
