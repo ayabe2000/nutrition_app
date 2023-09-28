@@ -11,6 +11,7 @@ from wtforms import (
 from wtforms.validators import DataRequired, NumberRange
 from wtforms.fields import DateField
 from datetime import datetime
+from models import Food
 
 
 class LoginForm(FlaskForm):
@@ -38,6 +39,11 @@ class FoodEntryForm(FlaskForm):
     name = SelectField("Select Food", choices=[])
     grams = IntegerField("Grams", validators=[NumberRange(min=1)])
     submit_entry = SubmitField("Submit")
+
+
+    def __init__(self, *args, **kwargs):
+        super(FoodEntryForm, self).__init__(*args, **kwargs)
+        self.name.choices = [(food.name, food.name) for food in Food.query.all()]
 
 
 class EditGramsForm(FlaskForm):

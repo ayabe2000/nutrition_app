@@ -121,10 +121,10 @@ class DailyNutrient(db.Model):
 
 def get_food_by_name(food_name):
     """名前を使って食品情報を取得する"""
+    return Food.query.filter_by(name=food_name).first()
 
-    food = Food.query.filter_by(name=food_name).first()
-    print(f"Food info for {food_name}: {food}")
 
+<
     if food:
         return food
     else:
@@ -176,9 +176,9 @@ def create_new_food_entry(food_name, grams, user_id, selected_date):
         f"Calculated nutrients: Protein={protein}, Carbohydrates={carbohydrates}, Fat={fat}, Cholesterol={cholesterol}, Energy_kcal={energy_kcal}"
     )
 
-    return FoodEntry(
+    new_food_entry = FoodEntry(
         user_id=user_id,
-        food_name=food_name,
+        food_name=cleaned_food_name,
         grams=grams,
         protein=protein,
         fat=fat,
@@ -187,3 +187,8 @@ def create_new_food_entry(food_name, grams, user_id, selected_date):
         energy_kcal=energy_kcal,
         date=selected_date,
     )
+
+    db.session.add(new_food_entry)
+    db.session.commit()
+
+    return new_food_entry

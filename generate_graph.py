@@ -86,7 +86,7 @@ def fetch_data(user_id):
     connection = engine.connect()
     result = connection.execute(
         text("SELECT date, SUM(protein) as protein, SUM(energy_kcal) as energy, SUM(fat) as fat, SUM(cholesterol) as cholesterol, SUM(carbohydrates) as carbohydrates FROM food_entry WHERE date IS NOT NULL AND user_id = :user_id GROUP BY date"),
-        user_id=user_id
+        {'user_id': user_id}
     )
 
     dates = []
@@ -122,19 +122,40 @@ def fetch_data(user_id):
 
 def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     """fetch_data関数から取得したデータを用いて栄養素摂取量の時間経過による変化を示すグラフを作成"""
-    plt.figure()
-    plt.plot(dates, protein, label="Protein (g)")
-    plt.plot(dates, energy, label="Energy (kcal)")
-    plt.plot(dates, fat, label="Fat (g)")
-    plt.plot(dates, cholesterol, label="Cholesterol (mg)")
-    plt.plot(dates, carbohydrates, label="Carbohydrates (g)")
 
-    plt.title("Nutrient Intake Over Time")
-    plt.xlabel("Date")
-    plt.ylabel("Intake")
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
+    fig,axes =plt.subplots(3,2,figsize=(10,10))
+
+    axes[0,0].plot(dates,protein,label="Protein(g)",color="b")
+    axes[0,0].set_title("Protein Intake Over Time")
+    axes[0,0].set_xlabel("Date")
+    axes[0,0].set_ylabel("Protein (g)")
+    axes[0,0].tick_params(axis="x",rotation=45)
+
+    axes[0,1].plot(dates,energy,label="Energy (kcal)",color="g")
+    axes[0,1].set_title("Energy Intake Over Time")
+    axes[0,1].set_xlabel("Date")
+    axes[0,1].set_ylabel("Energy (kcal)")
+    axes[0,1].tick_params(axis="x",rotation=45)
+    
+    axes[1,0].plot(dates,protein,label="Fat(g)",color="r")
+    axes[1,0].set_title("Fat Intake Over Time")
+    axes[1,0].set_xlabel("Date")
+    axes[1,0].set_ylabel("Fat (g)")
+    axes[1,0].tick_params(axis="x",rotation=45)
+
+    axes[1, 1].plot(dates, cholesterol, label="Cholesterol (mg)", color='c')
+    axes[1, 1].set_title("Cholesterol Intake Over Time")
+    axes[1, 1].set_xlabel("Date")
+    axes[1, 1].set_ylabel("Cholesterol (mg)")
+    axes[1, 1].tick_params(axis='x', rotation=45)
+
+    axes[2, 0].plot(dates, carbohydrates, label="Carbohydrates (g)", color='m')
+    axes[2, 0].set_title("Carbohydrates Intake Over Time")
+    axes[2, 0].set_xlabel("Date")
+    axes[2, 0].set_ylabel("Carbohydrates (g)")
+    axes[2, 0].tick_params(axis='x', rotation=45)
+
+    fig.delaxes(axes[2,1])
 
 
 
@@ -157,7 +178,7 @@ def get_image_data(user_id):
     """fetch_data, generate_graph, get_base64_encoded_image,create_html関数を順番に呼び出し、プロセスを実行"""
 
     dates, protein, energy, fat, cholesterol, carbohydrates = fetch_data(user_id)
-    generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
+    encoded_image =generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates)
 
 
 
