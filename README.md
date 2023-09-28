@@ -65,8 +65,9 @@ Excelファイルは準備したExcelパスに置き換える必要がありま�
      source venv/bin/activate
 
    - コマンドラインから以下のコマンドを実行してスクリプトを直接実行します
+   　Excelパスは準備したものに置き換えます。
      
-     python import_data.py
+     python import_data.py xxxx.xlsx
 
    - データの取り込みが完了すると、栄養素情報がデータベースに登録されます。
 

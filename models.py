@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from extensions import db
 
 
+
+
 db = SQLAlchemy()
 
 
@@ -122,31 +124,53 @@ def get_food_by_name(food_name):
     return Food.query.filter_by(name=food_name).first()
 
 
+<
+    if food:
+        return food
+    else:
+        return None
+    
+
+def convert_to_float(value):
+    """Convert the given value to float. If the conversion fails, return 0.0."""
+    try:
+        if isinstance(value, (int, float)):
+            return float(value)
+        elif isinstance(value, str):
+            # Handle strings that might represent numbers
+            cleaned_value = value.replace(",", "").replace("(", "").replace(")", "").replace("Tr", "").strip()
+            if cleaned_value:
+                return float(cleaned_value)
+            else:
+                return 0.0
+        else:
+            return 0.0
+    except ValueError:
+        return 0.0
+
 def create_new_food_entry(food_name, grams, user_id, selected_date):
     """新しい食品エントリの作成と追加"""
 
-    cleaned_food_name = food_name.strip()
+    food = get_food_by_name(food_name)
 
-    if not cleaned_food_name:
+    # 以下のように各属性を変換します。
+    protein_per_100g = convert_to_float(food.protein_per_100g)
+    carbs_per_100g = convert_to_float(food.carbs_per_100g)
+    fat_per_100g = convert_to_float(food.fat_per_100g)
+    cholesterol_per_100g = convert_to_float(food.cholesterol_per_100g)
+    energy_kcal_100g = convert_to_float(food.energy_kcal_100g)
+
+    if not food or protein_per_100g is None:
+        print(
+            f"Error: food not found or protein_per_100g is None for food name {food_name}"
+        )
         return
 
-    food = get_food_by_name(cleaned_food_name)
-
-    if not food:
-        return
-
-    # 食品の栄養情報を使用して新しいエントリを作成
-    protein_value = food.protein_per_100g
-    carbs_value = food.carbs_per_100g
-    fat_value = food.fat_per_100g
-    cholesterol_value = food.cholesterol_per_100g
-    energy_value = food.energy_kcal_100g
-
-    protein = (protein_value / 100) * grams
-    carbohydrates = (carbs_value / 100) * grams
-    fat = (fat_value / 100) * grams
-    cholesterol = (cholesterol_value / 100) * grams
-    energy_kcal = (energy_value / 100) * grams
+    protein = (protein_per_100g / 100) * grams
+    carbohydrates = (carbs_per_100g / 100) * grams
+    fat = (fat_per_100g / 100) * grams
+    cholesterol = (cholesterol_per_100g / 100) * grams
+    energy_kcal = (energy_kcal_100g / 100) * grams
 
     print(
         f"Calculated nutrients: Protein={protein}, Carbohydrates={carbohydrates}, Fat={fat}, Cholesterol={cholesterol}, Energy_kcal={energy_kcal}"
