@@ -24,7 +24,7 @@ jobs :
         pip install pytest pylint
 
     - name : Run unit tests
-      run : pytest ./root/nutrition_app4/test_models.py
+      run : pytest ./test_models.py
 
     - name : Lint code
       run : pylint **/*.py
