@@ -1,30 +1,28 @@
-"""このモジュールはデータをインポートに関連する関数を含む"""
-
+import sys
 import pandas as pd
 import logging
 from app import db, create_app
 from models import Food
+import sqlite3
 
 logging.basicConfig(filename="import_food.log", level=logging.INFO)
 
-
 def convert_to_float(value):
-    """
-    引数として受け取った値を浮動小数点数(float)に変換します。変換できない場合は0.0を返します。
-
-    Args:
-        value (int, float, str): 変換する値。整数、浮動小数点数、または数値を含む文字列が想定されます。
-
-    Returns:
-        float: 変換後の浮動小数点数。変換できない場合は0.0。
-    """
+    """Convert the given value to float. If the conversion fails, return 0.0."""
     try:
         if isinstance(value, (int, float)):
             return float(value)
-        return float(value.replace(",", ""))
+        elif isinstance(value, str):
+            # Handle strings that might represent numbers
+            cleaned_value = value.replace(",", "").replace("(", "").replace(")", "").replace("Tr", "").strip()
+            if cleaned_value:
+                return float(cleaned_value)
+            else:
+                return 0.0
+        else:
+            return 0.0
     except ValueError:
         return 0.0
-
 
 def process_row(row):
     """Excelのデータを処理するコード"""
@@ -54,47 +52,38 @@ def process_row(row):
         db.session.commit()
         logging.info(f"Added food: {food_name}")
 
+def import_to_sqlite(excel_file_path, db_path="instance/nutrition_app.db"):
+    # Excelファイルの読み込み
+    data = pd.read_excel(excel_file_path, skiprows=3, header=[0, 1])
+    print(data.columns)
+   
+    # カラムの選択と名前の変更
+    selected_columns = [
+        ('Unnamed: 3_level_0', '食品名'),
+        ('Unnamed: 5_level_0', '廃 棄 率'),
+        ('Unnamed: 8_level_0', '一般成分'),
+        ('Unnamed: 10_level_0', '一般成分'),
+        ('Unnamed: 15_level_0', '一般成分'),
+        ('Unnamed: 16_level_0', '一般成分')
+    ]
 
-def import_food_data_from_excel(excel_path):
-    """
-    Excelファイルから食品データをインポートしてデータベースに追加。
-
-    Args:
-        excel_path (str): インポートするExcelファイルのパス。
-
-    Returns:
-        None
-    """
-
-    app = create_app()
-    error_rows = []
-    index = 0
-
-    with app.app_context():
-        try:
-            data = pd.read_excel(excel_path, header=0)
-            error_rows = []
-
-            for index, row in data.iterrows():
-                try:
-                    process_row(row)
-                except pd.errors.ParserError as parser_error:
-                    logging.error(
-                        f"An error occurred while processing the data: {parser_error}"
-                    )  # 2. ログを出力
-                except KeyError as key_error:
-                    logging.error(f"Error at row {index + 1}: {key_error}")  # 2. ログを出力
-                    error_rows.append(index + 1)
-
-            db.session.commit()
-
-        except ValueError as value_error:
-            logging.error(
-                f"An error occurred while reading the Excel data: {value_error}"
-            )  # 2. ログを出力
-
+    selected_data = data[selected_columns]
+    selected_data.columns = ['name', 'energy_kcal_100g', 'protein_per_100g', 'fat_per_100g', 'cholesterol_per_100g', 'carbs_per_100g']
+    
+    # SQLiteに接続
+    conn = sqlite3.connect(db_path)
+    
+    # データの挿入
+    selected_data.to_sql('food', conn, if_exists='append', index=False)
+    
+    # 接続のクローズ
+    conn.close()
 
 if __name__ == "__main__":
-    app_instance = create_app()
-    with app_instance.app_context():
-        import_food_data_from_excel("/mnt/c/Users/user/Downloads/food_data.xlsx")
+    # コマンドライン引数の確認
+    if len(sys.argv) != 2:
+        print("Usage: python import_data.py <path_to_excel_file>")
+        sys.exit(1)
+
+    excel_path = sys.argv[1]
+    import_to_sqlite(excel_path)

@@ -4,6 +4,7 @@ on :
   push:
       branches:
         - ci/issue-47
+  
 jobs :
   build:
     runs-on : ubuntu-latest
