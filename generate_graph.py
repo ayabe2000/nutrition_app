@@ -126,6 +126,8 @@ def generate_graph(dates, protein, energy, fat, cholesterol, carbohydrates):
     """fetch_data関数から取得したデータを用いて栄養素摂取量の時間経過による変化を示すグラフを作成"""
 
     fig,axes =plt.subplots(3,2,figsize=(10,10))
+    plt.subplots_adjust(wspace=0.4, hspace=0.6)
+
 
     axes[0,0].plot(dates,protein,label="Protein(g)",color="b")
     axes[0,0].set_title("Protein Intake Over Time")

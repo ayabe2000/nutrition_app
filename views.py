@@ -68,8 +68,9 @@ def login_page():
                 login_user(new_user)
                 session['user_id'] = new_user.id 
                 return redirect(url_for("main.dashboard"))
+    username = current_user.username if current_user.is_authenticated else None
     return render_template(
-        "login.html", login_form=login_form, register_form=register_form
+        "login.html", login_form=login_form, register_form=register_form,username=username
     )
 
 @main_blueprint.route('/logout',methods=['POST'])
@@ -135,7 +136,7 @@ def handle_form_submission(form):
         user_id = current_user.id
         selected_date = form.date.data
         new_entry = create_new_food_entry(
-            food, grams, user_id, selected_date
+            food_name, grams, user_id, selected_date
         )
 
         if new_entry is None:
