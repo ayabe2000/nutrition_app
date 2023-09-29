@@ -8,11 +8,11 @@ from logging.config import fileConfig
 
 from flask import current_app
 
-from alembic import context as alembic_context
+from alembic import context 
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-config = alembic_context.config
+config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -42,8 +42,7 @@ def get_engine_url():
         str: データベースエンジンのURL
     """
     try:
-        return get_engine().url.render_as_string(hide_password=False).replace(
-            '%', '%%')
+        return get_engine().url.render_as_string(hide_password=False)
     except AttributeError:
         return str(get_engine().url).replace('%', '%%')
 
@@ -85,13 +84,13 @@ def run_migrations_offline():
     script output.
 
     """
-    url = alembic_context.config.get_main_option("sqlalchemy.url")
-    alembic_context.config(
+    url = config.get_main_option("sqlalchemy.url")
+    context.config(
         url=url, target_metadata=get_metadata(), literal_binds=True
     )
 
-    with alembic_context.config.begin_transaction():
-        alembic_context.config.run_migrations()
+    with context.begin_transaction():
+        context.run_migrations()
 
 
 def run_migrations_online():
@@ -119,17 +118,17 @@ def run_migrations_online():
     connectable = get_engine()
 
     with connectable.connect() as connection:
-        alembic_context.config.configure(
+        context.configure(
             connection=connection,
             target_metadata=get_metadata(),
             **conf_args
         )
 
-        with alembic_context.config.begin_transaction():
-            alembic_context.config.run_migrations()
+        with context.begin_transaction():
+            context.run_migrations()
 
 
-if alembic_context.config.is_offline_mode():
+if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
