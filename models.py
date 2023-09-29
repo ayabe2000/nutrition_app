@@ -121,13 +121,13 @@ class DailyNutrient(db.Model):
 
 def get_food_by_name(food_name):
     """名前を使って食品情報を取得する"""
-    return Food.query.filter_by(name=food_name).first()
+    print(f"Queried food_name: {food_name}") 
+    food = Food.query.filter_by(name=food_name).first()
 
-
-    if food:
-        return food
-    else:
-        return None
+    if food :
+         return food
+    else :
+         return None
     
 
 def convert_to_float(value):
@@ -150,7 +150,6 @@ def convert_to_float(value):
 def create_new_food_entry(food, grams, user_id, selected_date):
     """新しい食品エントリの作成と追加"""
 
-    food = get_food_by_name(food_name)
 
     # 以下のように各属性を変換します。
     protein_per_100g = convert_to_float(food.protein_per_100g)
@@ -161,7 +160,7 @@ def create_new_food_entry(food, grams, user_id, selected_date):
 
     if not food or protein_per_100g is None:
         print(
-            f"Error: food not found or protein_per_100g is None for food name {food_name}"
+            f"Error: food not found or protein_per_100g is None for food name {food}"
         )
         return
 
